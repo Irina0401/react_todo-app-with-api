@@ -15,7 +15,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   todos,
-  activeTodosCount,
   loading,
   field,
   todoTitle,
@@ -28,15 +27,15 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
       {todos.length > 0 && (
-      <button
-        type="button"
-        className={`todoapp__toggle-all ${toggleAll ? 'active' : ''}`}
-        data-cy="ToggleAllButton"
-        disabled={loading || todos.length === 0}
-        onClick={handleToggleAll}
-      />
+        <button
+          type="button"
+          className={`todoapp__toggle-all ${toggleAll ? 'active' : ''}`}
+          data-cy="ToggleAllButton"
+          disabled={loading || todos.length === 0}
+          onClick={handleToggleAll}
+        />
       )}
-      
+
       {/* Add a todo on form submit */}
       <form onSubmit={handleAddTodo}>
         <input

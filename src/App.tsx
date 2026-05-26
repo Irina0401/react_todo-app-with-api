@@ -4,7 +4,7 @@
 import React from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, addTodo, deleteTodo } from './api.ts/todos';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getTodos } from './api.ts/todos';
 import { Todo, FilterType, ErrorMessage } from './types/Todo';
 import { Header } from './components/Header';
@@ -105,9 +105,8 @@ export const App: React.FC = () => {
       const updatedTodo = await updateTodo(todo.id, {
         completed: !todo.completed,
       });
-      setTodos(
-        todos.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo)),
-      );
+
+      setTodos(todos.map(t => (t.id === updatedTodo.id ? updatedTodo : t)));
     } catch {
       showError(ErrorMessage.UnableToggleTodo);
     } finally {
@@ -115,11 +114,14 @@ export const App: React.FC = () => {
     }
   }
 
+  const toggleAll = todos.every(todo => todo.completed);
+
   async function handleToggleAll() {
     setError('');
     const newStatus = !toggleAll;
     const todosToUpdate = todos.filter(todo => todo.completed !== newStatus);
     const updatingIdsArray = todosToUpdate.map(todo => todo.id);
+
     setUpdatingIds(prev => [...prev, ...updatingIdsArray]);
     try {
       const result = await Promise.allSettled(
@@ -128,18 +130,22 @@ export const App: React.FC = () => {
         ),
       );
       const hasErrors = result.some(r => r.status === 'rejected');
+
       if (hasErrors) {
         showError(ErrorMessage.UnableToggleTodo);
       }
+
       const successfulUpd: Todo[] = [];
-      result.forEach(result => {
-        if (result.status === 'fulfilled') {
-          successfulUpd.push(result.value);
+
+      result.forEach(res => {
+        if (res.status === 'fulfilled') {
+          successfulUpd.push(res.value);
         }
       });
       setTodos(currentTodos =>
         currentTodos.map(todo => {
           const upd = successfulUpd.find(u => u.id === todo.id);
+
           return upd ? upd : todo;
         }),
       );
@@ -218,7 +224,6 @@ export const App: React.FC = () => {
   const filteredTodos = getFilteredTodos();
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
   const completedTodosCount = todos.filter(todo => todo.completed).length;
-  const toggleAll = todos.every(todo => todo.completed);
 
   return (
     <div className="todoapp">

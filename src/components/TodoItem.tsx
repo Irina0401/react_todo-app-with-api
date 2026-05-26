@@ -34,10 +34,13 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   async function handleSave() {
     if (saveText.trim() === '') {
       handleDeleteTodo(todo.id);
+
       return;
     }
+
     if (saveText === todo.title) {
       setEditTodo(null);
+
       return;
     }
 
@@ -45,6 +48,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
     try {
       const updatedTodo = await updateTodo(todo.id, { title: saveText.trim() });
+
       setTodos(prev =>
         prev.map(t => (t.id === updatedTodo.id ? updatedTodo : t)),
       );
